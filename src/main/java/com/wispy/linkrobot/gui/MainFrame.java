@@ -1,6 +1,7 @@
 package com.wispy.linkrobot.gui;
 
 import com.wispy.linkrobot.gui.search.*;
+import com.wispy.linkrobot.process.SearchManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,11 +39,15 @@ public class MainFrame extends JFrame {
     @Autowired
     private SearchCancelButton searchCancelButton;
 
+    @Autowired
+    private SearchManager searchManager;
+
     @PostConstruct
     public void initAll() {
         initFrame();
         initPanels();
         initContent();
+        SwingUtilities.invokeLater(this::updateSearchStatus);
     }
 
     public void initFrame() {
@@ -113,6 +118,29 @@ public class MainFrame extends JFrame {
         searchPlacement.insets = new Insets(0, 0, 0, 0);
         searchPlacement.gridx = 4;
         searchPanel.add(searchCancelButton, searchPlacement);
+    }
+
+    public void updateSearchStatus() {
+        switch (searchManager.getState()) {
+            case WAITING:
+                searchStartButton.setEnabled(true);
+                searchPauseButton.setEnabled(false);
+                searchCancelButton.setEnabled(false);
+                urlTextField.setEnabled(true);
+                break;
+            case PAUSED:
+                searchStartButton.setEnabled(true);
+                searchPauseButton.setEnabled(false);
+                searchCancelButton.setEnabled(true);
+                urlTextField.setEnabled(false);
+                break;
+            case PROCESSING:
+                searchStartButton.setEnabled(false);
+                searchPauseButton.setEnabled(true);
+                searchCancelButton.setEnabled(true);
+                urlTextField.setEnabled(false);
+                break;
+        }
     }
 
     private void initStatus() {

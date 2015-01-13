@@ -14,5 +14,6 @@ public class UrlTextField extends JTextField {
 
     public UrlTextField() {
         setToolTipText("Enter base URL for search, e.g. https://example.com/application/");
+        setText("https://example.com/application/");
     }
 }
